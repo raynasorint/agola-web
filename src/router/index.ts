@@ -6,6 +6,7 @@ import { Auth } from '../app/auth';
 import createorganization from '../components/createorganization.vue';
 import createproject from '../components/createproject.vue';
 import createprojectgroup from '../components/createprojectgroup.vue';
+import createsecret from '../components/createsecret.vue';
 import orgmembers from '../components/orgmembers.vue';
 import projectgroupsettings from '../components/projectgroupsettings.vue';
 import projects from '../components/projects.vue';
@@ -263,6 +264,19 @@ const routes: Array<RouteRecordRaw> = [
           projectref: parseRef(firstEntry(route.params.projectref)),
         }),
       },
+      {
+        path: 'newsecret',
+        name: 'user project settings new secret',
+        component: createsecret,
+        props: (route) => {
+          return {
+            ownertype: 'user',
+            ownername: firstEntry(route.params.username),
+            projectref: parseRef(firstEntry(route.params.projectref)),
+            refType: 'project',
+          };
+        },
+      },
     ],
   },
 
@@ -324,6 +338,19 @@ const routes: Array<RouteRecordRaw> = [
           ownername: firstEntry(route.params.username),
           projectgroupref: parseRef(firstEntry(route.params.projectgroupref)),
         }),
+      },
+      {
+        path: 'newsecret',
+        name: 'user projectgroup settings new secret',
+        component: createsecret,
+        props: (route) => {
+          return {
+            ownertype: 'user',
+            ownername: firstEntry(route.params.username),
+            projectgroupref: parseRef(firstEntry(route.params.projectgroupref)),
+            refType: 'projectgroup',
+          };
+        },
       },
     ],
   },
@@ -483,6 +510,19 @@ const routes: Array<RouteRecordRaw> = [
           projectref: parseRef(firstEntry(route.params.projectref)),
         }),
       },
+      {
+        path: 'newsecret',
+        name: 'org project settings new secret',
+        component: createsecret,
+        props: (route) => {
+          return {
+            ownertype: 'org',
+            ownername: firstEntry(route.params.orgname),
+            projectref: parseRef(firstEntry(route.params.projectref)),
+            refType: 'project',
+          };
+        },
+      },
     ],
   },
 
@@ -544,6 +584,19 @@ const routes: Array<RouteRecordRaw> = [
           ownername: firstEntry(route.params.orgname),
           projectgroupref: parseRef(firstEntry(route.params.projectgroupref)),
         }),
+      },
+      {
+        path: 'newsecret',
+        name: 'org projectgroup settings new secret',
+        component: createsecret,
+        props: (route) => {
+          return {
+            ownertype: 'org',
+            ownername: firstEntry(route.params.orgname),
+            projectgroupref: parseRef(firstEntry(route.params.projectgroupref)),
+            refType: 'projectgroup',
+          };
+        },
       },
     ],
   },

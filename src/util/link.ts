@@ -237,6 +237,24 @@ export function projectSettingsLink(
   };
 }
 
+export function projectSettingsNewSecretLink(
+  ownertype: string,
+  ownername: string,
+  projectref: string[]
+): RouteLocationRaw {
+  const path = projectPath(ownertype, ownername, projectref);
+  return { path: `${path}/newsecret` };
+}
+
+export function projectGroupSettingsNewSecretLink(
+  ownertype: string,
+  ownername: string,
+  projectgroupref: string[]
+): RouteLocationRaw {
+  const path = projectGroupPath(ownertype, ownername, projectgroupref);
+  return { path: `${path}/newsecret` };
+}
+
 export function projectGroupCreateProjectGroupLink(
   ownertype: string,
   ownername: string,

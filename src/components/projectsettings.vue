@@ -43,7 +43,11 @@
           v-if="secrets && allSecrets"
           :secrets="secrets"
           :allSecrets="allSecrets"
+          :ownertype="ownertype"
+          :ownername="ownername"
+          :projectref="projectref"
           refType="project"
+          @delete-secret="handleDeleteSecret"
         />
       </div>
     </div>
@@ -310,6 +314,10 @@ export default defineComponent({
       { immediate: false, shallow: false }
     );
 
+    const handleDeleteSecret = () => {
+      refreshSecrets();
+    };
+
     const fetchSecrets = async () => {
       try {
         return await api.getSecrets(
@@ -473,7 +481,7 @@ export default defineComponent({
       projectIsPrivate,
       projectNameToDelete,
       Visibility,
-
+      handleDeleteSecret,
       updateProject,
       deleteProject,
       updateRepoLinkedAccount,
