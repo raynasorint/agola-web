@@ -28,6 +28,7 @@
       <div v-for="(pair, index) in secretvalues" :key="index">
         <div class="flex items-center mt-4">
           <input
+            id="secret-name-input"
             class="appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             required
