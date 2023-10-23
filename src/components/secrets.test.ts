@@ -1,5 +1,5 @@
 import { VueWrapper, mount } from '@vue/test-utils';
-import createsecret from './createsecret.vue';
+import secrets from './secrets.vue';
 import { rest } from 'msw';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -21,8 +21,20 @@ const secretsMock = [
   },
 ];
 global.fetch = vi.fn();
-
+/*const server = setupServer(
+  rest.get(
+    'http://localhost:8000/api/v1alpha/projectgroups/user%2Frivanova/secrets',
+    (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(secretsMock));
+    }
+  )
+);*/
 export const restHandlers = [
+  /*rest.get(
+    'http://localhost:8000/api/v1alpha/projectgroups/user%2Frivanova/secrets',
+    (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(secretsMock));
+    }*/
   rest.post(
     'http://localhost:8000/api/v1alpha/projectgroups/user%2Frivanova/secrets',
     (req, res, ctx) => {
@@ -40,7 +52,7 @@ let wrapper: VueWrapper;
 beforeEach(async () => {
   const api = newAPI();
   const appState = newAppState();
-  wrapper = mount(createsecret, {
+  wrapper = mount(secrets, {
     global: {
       provide: {
         [APIInjectionKey as symbol]: api,
@@ -58,20 +70,25 @@ beforeEach(async () => {
   });
 });
 
-test('Create Secret API', async () => {
-  const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-      {
-        path: '/', // Define a route for successful creation
-        name: 'settings',
-        component: {
-          createsecret,
-        },
-      },
-    ],
-  });
-  await wrapper.find('form').trigger('submit.prevent');
+test('Fetches secrets', async () => {
+  server.use(
+    rest.get(
+      'http://localhost:8000/api/v1alpha/projectgroups/user%2Frivanova/secrets',
+      (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(secretsMock));
+      }
+    )
+  );
+
+  // Wait for the component to fetch secrets (you may need to adjust this based on actual behavior)
   await wrapper.vm.$nextTick();
-  expect(router.currentRoute.value.fullPath).toBe('/');
+
+  // Check if the secrets are displayed in the component
+  const secretElements = wrapper.findAll('span'); // Assuming there's a class 'secret' for each secret element
+  expect(secretElements.length).toBe(secretsMock.length);
+  console.log('secrets', secretElements);
+  // Check if the secret names are displayed correctly
+  for (let i = 0; i < secretsMock.length; i++) {
+    expect(secretElements[i].text()).toContain(secretsMock[i].name);
+  }
 });
