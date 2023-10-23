@@ -10,14 +10,29 @@ import { AppStateInjectionKey, newAppState } from '../app/appstate';
 // Mocking the secrets prop
 const secretsMock = [
   {
-    id: '1',
-    name: 'Secret 1',
-    parentPath: 'Parent 1',
+    id: 'a5652bd8-547e-4523-9f56-82de2db868fd',
+    name: 'sds',
+    parent_path: 'user/rivanova',
   },
   {
-    id: '2',
-    name: 'Secret 2',
-    parentPath: 'Parent 2',
+    id: '9589d518-b85f-446a-9424-3d38dc1ac8ac',
+    name: 'vvvv',
+    parent_path: 'user/rivanova',
+  },
+  {
+    id: '4548b892-b029-48dd-adee-61017dc4da65',
+    name: 'gg',
+    parent_path: 'user/rivanova',
+  },
+  {
+    id: '8cf6951c-cef4-4bcc-859c-83ab29dbb18b',
+    name: 'ddd',
+    parent_path: 'user/rivanova',
+  },
+  {
+    id: '0abfe045-659a-4ae5-8529-330f153a7c6a',
+    name: 'hh',
+    parent_path: 'user/rivanova',
   },
 ];
 global.fetch = vi.fn();
@@ -63,7 +78,7 @@ test('Create Secret API', async () => {
     history: createWebHistory(),
     routes: [
       {
-        path: '/', // Define a route for successful creation
+        path: '/settings', // Define a route for successful creation
         name: 'settings',
         component: {
           createsecret,
@@ -73,5 +88,5 @@ test('Create Secret API', async () => {
   });
   await wrapper.find('form').trigger('submit.prevent');
   await wrapper.vm.$nextTick();
-  expect(router.currentRoute.value.fullPath).toBe('/');
+  expect(router.currentRoute.value.fullPath).toBe('/settings');
 });
