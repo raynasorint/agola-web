@@ -386,15 +386,7 @@ export function newAPI(): API {
       headers['X-Csrf-Token'] = csrfToken;
     }
 
-    return window.fetch(
-      input,
-      _.merge(init, {
-        headers,
-        mode: 'cors',
-        // required for sending cookies to api if deployed on different url
-        credentials: 'include',
-      })
-    );
+    return window.fetch(input, init);
   }
 
   async function fetch(
@@ -1115,8 +1107,10 @@ export function newAPI(): API {
     signal?: AbortSignal
   ): Promise<SecretResponse> {
     const apiURL = baseURL();
+
     apiURL.pathname +=
       '/projects/' + encodeURIComponent(projectref) + '/secrets';
+    console.log('apiurl', apiURL);
     const init = {
       method: 'POST',
       body: JSON.stringify({
@@ -1126,9 +1120,9 @@ export function newAPI(): API {
       }),
       signal,
     };
-
-    const res = await fetch(apiURL.toString(), init);
-
+    console.log('test', apiURL.toString(), init);
+    const res = await window.fetch(apiURL.toString(), init);
+    console.log('test');
     const secret = TypedJSON.parse(await res.text(), SecretResponse);
     if (!secret) throw new ApiError();
 

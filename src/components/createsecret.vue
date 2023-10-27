@@ -4,6 +4,7 @@
     <form @submit.prevent="submitForm" class="p-4">
       <div class="mt-4">
         <input
+          id="secret-name"
           class="mb-2 appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
           type="text"
           required
@@ -28,7 +29,7 @@
       <div v-for="(pair, index) in secretvalues" :key="index">
         <div class="flex items-center mt-4">
           <input
-            id="secret-name-input"
+            :id="'secret-name-input-' + index"
             class="appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             required
@@ -36,6 +37,7 @@
             v-model="pair.key"
           />
           <input
+            :id="'secret-value-input-' + index"
             class="ml-2 appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             required
@@ -68,17 +70,20 @@
       </div>
       <div class="flex mt-4">
         <button
+          id="'secret-name-add-key"
           class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
           @click="addKeyValuePair"
         >
           Add Key-Value Pair
         </button>
         <button
+          id="submit-save"
           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2 rounded"
           type="submit"
         >
           Save
         </button>
+        <button type="button" id="toAbout" @click="goToSettings">Cancel</button>
       </div>
     </form>
   </div>
@@ -224,6 +229,7 @@ export default {
     );
 
     const submitForm = async () => {
+      console.log('form submited');
       formSubmitted.value = true;
       createSecretError.value = undefined;
       secretValueErrors.value = secretvalues.value.map(() => ({}));
@@ -250,6 +256,8 @@ export default {
         }
       });
 
+      console.log('formIsValid', formIsValid);
+      console.log('formIsValid', secretValueErrors);
       if (!formIsValid) return;
 
       const transformedSecretValues: Record<string, string> = {};
@@ -257,14 +265,15 @@ export default {
       for (const element of secretvalues.value) {
         _.set(transformedSecretValues, element.key, element.value);
       }
-
       try {
+        console.log('props.refType', props.refType);
         if (props.refType === 'project') {
           await api.createProjectSecret(
             apiProjectGroupRef.value,
             secretName.value,
             transformedSecretValues
           );
+          console.log('xxxxxxxxx ok');
           router.push(
             projectSettingsLink(
               ownertype.value,
@@ -288,10 +297,31 @@ export default {
           );
         }
       } catch (e) {
+        console.log('e', e);
         if (e instanceof ApiError) {
           if (e.aborted) return;
         }
         createSecretError.value = e;
+      }
+    };
+    const goToSettings = () => {
+      if (props.refType === 'project') {
+        router.push(
+          projectSettingsLink(
+            ownertype.value,
+            ownername.value,
+            projectref.value
+          )
+        );
+      }
+      if (props.refType === 'projectgroup') {
+        router.push(
+          projectGroupSettingsLink(
+            ownertype.value,
+            ownername.value,
+            projectgroupref.value
+          )
+        );
       }
     };
 
@@ -309,6 +339,7 @@ export default {
       addKeyValuePair,
       removeKeyValuePair,
       submitForm,
+      goToSettings,
     };
   },
 };

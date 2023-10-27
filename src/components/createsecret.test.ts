@@ -1,14 +1,14 @@
 import { VueWrapper, mount } from '@vue/test-utils';
 import createsecret from './createsecret.vue';
 import { rest } from 'msw';
-import { afterAll, afterEach, beforeAll } from 'vitest';
-import { createRouter, createWebHistory } from 'vue-router';
+import { afterAll, afterEach, beforeAll, describe } from 'vitest';
+import { createRouter, createWebHistory, useRouter } from 'vue-router';
 import { setupServer } from 'msw/node';
 import { APIInjectionKey, newAPI } from '../app/api';
 import { AppStateInjectionKey, newAppState } from '../app/appstate';
 
 // Mocking the secrets prop
-const secretsMock = [
+/*const secretsMock = [
   {
     id: 'a5652bd8-547e-4523-9f56-82de2db868fd',
     name: 'sds',
@@ -35,12 +35,19 @@ const secretsMock = [
     parent_path: 'user/rivanova',
   },
 ];
-global.fetch = vi.fn();
 
 export const restHandlers = [
   rest.post(
-    'http://localhost:8000/api/v1alpha/projectgroups/user%2Frivanova/secrets',
+    'http://localhost:3000/api/v1alpha/:refType/:projectref/secrets',
     (req, res, ctx) => {
+      console.log('req', req.text);
+      return res(ctx.status(200), ctx.json(secretsMock));
+    }
+  ),
+  rest.get(
+    'http://localhost:3000/api/v1alpha/:refType/:projectref/secrets',
+    (req, res, ctx) => {
+      console.log('req', req.text);
       return res(ctx.status(200), ctx.json(secretsMock));
     }
   ),
@@ -49,7 +56,7 @@ const server = setupServer(...restHandlers);
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+afterAll(() => server.close());*/
 
 let wrapper: VueWrapper;
 beforeEach(async () => {
@@ -65,28 +72,79 @@ beforeEach(async () => {
     props: {
       ownertype: 'type',
       ownername: 'name',
-      projectref: ['ref1', 'ref2'],
-      projectgroupref: ['groupref1', 'groupref2'],
+      projectref: ['test'],
+      projectgroupref: ['testgroup'],
       allSecrets: [], // Provide mock data if needed
       refType: 'project', // Provide the appropriate refType
     },
   });
 });
+describe(`Test fetch secrets`, () => {
+  it(`Test fetch secrets api`, () =>
+    new Promise<void>((done) => {
+      fetch(
+        `http://localhost:3000/api/v1alpha/projects/type%2Fname%2Ftest/secrets`,
+        { method: 'GET' }
+      )
+        .then((value) => {
+          console.log('xxxxxxxx');
+          return value.json();
+        })
+        .then((values) => {
+          console.log(values);
+          done();
 
-test('Create Secret API', async () => {
-  const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-      {
-        path: '/settings', // Define a route for successful creation
-        name: 'settings',
-        component: {
-          createsecret,
-        },
-      },
-    ],
+          return values;
+        });
+    }));
+});
+describe('Create Secret API', () => {
+  it('renders correctly', async () => {
+    vi.mock('vue-router', () => ({
+      useRoute: vi.fn(),
+      useRouter: vi.fn(() => ({
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        push: () => {},
+      })),
+    }));
+
+    const push = vi.fn();
+    //@ts-ignore
+    useRouter.mockImplementationOnce(() => ({
+      push,
+    }));
+    wrapper.find('#secret-name').setValue('Secretnametest');
+    wrapper.find('#secret-name-input-0').setValue('Secret key nam');
+    wrapper.find('#secret-value-input-0').setValue('sssdfsdfsfsfs');
+    wrapper.find('form').trigger('submit.prevent');
+    //  await wrapper.vm.$nextTick();
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(push).toHaveBeenCalledWith('/settings');
+    vi.restoreAllMocks();
   });
-  await wrapper.find('form').trigger('submit.prevent');
-  await wrapper.vm.$nextTick();
-  expect(router.currentRoute.value.fullPath).toBe('/settings');
+});
+
+describe(`Home`, () => {
+  it('renders correctly', () => {
+    vi.mock('vue-router', () => ({
+      useRoute: vi.fn(),
+      useRouter: vi.fn(() => ({
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        push: () => {},
+      })),
+    }));
+
+    const push = vi.fn();
+    //@ts-ignore
+    useRouter.mockImplementationOnce(() => ({
+      push,
+    }));
+
+    wrapper.find('#toAbout').trigger('click');
+    console.log(wrapper.html);
+    expect(push).toBeCalledTimes(1);
+    expect(push).toHaveBeenCalledWith('/settings');
+
+    vi.restoreAllMocks();
+  });
 });
