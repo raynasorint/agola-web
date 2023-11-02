@@ -86,9 +86,9 @@ test('update project name', async () => {
   updateProjectButton.element.click();
 
   await flushPromises();
-
-  expect(wrapper.router.push).toHaveBeenCalledTimes(1);
-  expect(wrapper.router.push).toHaveBeenCalledWith({
+  const app = wrapper.vm.$root; // Access the Vue instance
+  expect(app?.$router?.push).toHaveBeenCalledTimes(1);
+  expect(app?.$router?.push).toHaveBeenCalledWith({
     path: '/org/org01/projects/newproj01.proj/settings',
   });
 });

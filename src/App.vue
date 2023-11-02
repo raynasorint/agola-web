@@ -157,8 +157,6 @@ import { useAppState } from './app/appstate';
 import { useAuth } from './app/auth';
 import { ownerSettingsLink, ownerLink } from './util/link';
 
-import { worker } from './mocks/browser';
-
 export default defineComponent({
   name: 'App',
   directives: {
@@ -173,9 +171,6 @@ export default defineComponent({
     const navActive = ref(false);
     const userDropdownActive = ref(false);
     const createDropdownActive = ref(false);
-    if (process.env.NODE_ENV === 'development') {
-      //worker.start();
-    }
     watch(
       () => route.fullPath,
       () => {
